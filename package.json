@@ -1,0 +1,11 @@
+{
+  "name": "pasteframe",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Paste image screenshots into Google Docs comments as Drive links with previews.",
+  "scripts": {
+    "validate": "node scripts/validate.mjs",
+    "package": "npm run validate && powershell -ExecutionPolicy Bypass -File scripts/package.ps1"
+  },
+  "devDependencies": {}
+}
