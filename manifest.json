@@ -33,7 +33,7 @@
     "https://drive.google.com/*"
   ],
   "oauth2": {
-    "client_id": "REPLACE_WITH_CHROME_EXTENSION_OAUTH_CLIENT_ID.apps.googleusercontent.com",
+    "client_id": "951314652001-240hu2ot9ve3dm0lq0ea44bgg7fitld6.apps.googleusercontent.com",
     "scopes": ["https://www.googleapis.com/auth/drive.file"]
   }
 }

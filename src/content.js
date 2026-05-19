@@ -1,10 +1,6 @@
-const DRIVE_FILE_RE = /https:\/\/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)\/[^\s<)"]*/g;
-const DRIVE_OPEN_RE = /https:\/\/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/g;
-
-let previewObserver;
+const UPLOAD_TIMEOUT_MS = 45000;
 
 document.addEventListener("paste", handlePaste, true);
-startPreviewObserver();
 
 async function handlePaste(event) {
   const imageFile = findImageFile(event.clipboardData);
@@ -14,18 +10,24 @@ async function handlePaste(event) {
 
   event.preventDefault();
   const target = document.activeElement || event.target;
-  const notice = showToast("Uploading image to Drive...");
+  const notice = showToast("Authorizing Drive...", false, UPLOAD_TIMEOUT_MS + 5000);
 
   try {
+    debug("Image paste detected", {
+      mimeType: imageFile.type,
+      size: imageFile.size
+    });
     const dataUrl = await fileToDataUrl(imageFile);
-    const response = await chrome.runtime.sendMessage({
+    notice.update("Uploading image to Drive...", false, UPLOAD_TIMEOUT_MS + 5000);
+
+    const response = await sendMessageWithTimeout({
       type: "DIC_UPLOAD_IMAGE",
       payload: {
         dataUrl,
         mimeType: imageFile.type || "image/png",
         name: imageFile.name || makeImageName(imageFile.type)
       }
-    });
+    }, UPLOAD_TIMEOUT_MS);
 
     if (!response?.ok) {
       throw new Error(response?.error?.message || "Upload failed.");
@@ -33,8 +35,9 @@ async function handlePaste(event) {
 
     insertTextAtTarget(target, response.result.link);
     notice.update("Image link inserted.");
-    hydrateDrivePreviews();
+    debug("Image link inserted", response.result);
   } catch (error) {
+    console.error("[PasteFrame] Upload failed", error);
     notice.update(error.message || "Could not upload image.", true);
   }
 }
@@ -88,69 +91,6 @@ function insertTextAtTarget(target, text) {
   }
 }
 
-function startPreviewObserver() {
-  hydrateDrivePreviews();
-
-  previewObserver = new MutationObserver(() => {
-    queueMicrotask(hydrateDrivePreviews);
-  });
-
-  previewObserver.observe(document.documentElement, {
-    childList: true,
-    subtree: true
-  });
-}
-
-function hydrateDrivePreviews() {
-  const candidates = Array.from(document.querySelectorAll("a[href*='drive.google.com']"));
-
-  for (const anchor of candidates) {
-    if (anchor.dataset.dicPreviewed === "true") {
-      continue;
-    }
-
-    const fileId = extractDriveFileId(anchor.href);
-    if (!fileId || !isInsideCommentUi(anchor)) {
-      continue;
-    }
-
-    anchor.dataset.dicPreviewed = "true";
-    anchor.insertAdjacentElement("afterend", createPreview(fileId, anchor.href));
-  }
-}
-
-function extractDriveFileId(url) {
-  DRIVE_FILE_RE.lastIndex = 0;
-  DRIVE_OPEN_RE.lastIndex = 0;
-  return DRIVE_FILE_RE.exec(url)?.[1] || DRIVE_OPEN_RE.exec(url)?.[1] || null;
-}
-
-function isInsideCommentUi(element) {
-  const region = element.closest('[aria-label*="comment" i], [aria-label*="reply" i], [role="dialog"], .docos');
-  if (region) {
-    return true;
-  }
-
-  return /\b(comment|reply|resolve|reopen)\b/i.test(element.closest("div")?.textContent?.slice(0, 500) || "");
-}
-
-function createPreview(fileId, link) {
-  const wrapper = document.createElement("a");
-  wrapper.className = "dic-preview";
-  wrapper.href = link;
-  wrapper.target = "_blank";
-  wrapper.rel = "noopener noreferrer";
-  wrapper.setAttribute("aria-label", "Open pasted image");
-
-  const image = document.createElement("img");
-  image.src = `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w600`;
-  image.alt = "Pasted comment image";
-  image.loading = "lazy";
-
-  wrapper.append(image);
-  return wrapper;
-}
-
 function showToast(message, isError = false, timeout = 2500) {
   const toast = document.createElement("div");
   toast.className = `dic-toast${isError ? " dic-toast-error" : ""}`;
@@ -187,3 +127,24 @@ function makeImageName(mimeType) {
   return `docs-comment-image-${new Date().toISOString().replace(/[:.]/g, "-")}.${extension}`;
 }
 
+function sendMessageWithTimeout(message, timeoutMs) {
+  return new Promise((resolve, reject) => {
+    const timer = window.setTimeout(() => {
+      reject(new Error("Drive upload timed out. Open the extension service worker console for details, then try again."));
+    }, timeoutMs);
+
+    chrome.runtime.sendMessage(message)
+      .then((response) => {
+        window.clearTimeout(timer);
+        resolve(response);
+      })
+      .catch((error) => {
+        window.clearTimeout(timer);
+        reject(error);
+      });
+  });
+}
+
+function debug(message, details) {
+  console.debug("[PasteFrame]", message, details || "");
+}

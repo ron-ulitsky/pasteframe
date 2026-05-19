@@ -1,5 +1,6 @@
 const DRIVE_UPLOAD_URL = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,webContentLink,thumbnailLink";
 const DRIVE_PERMISSION_URL = (fileId) => `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}/permissions`;
+const FETCH_TIMEOUT_MS = 30000;
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message?.type !== "DIC_UPLOAD_IMAGE") {
@@ -18,6 +19,7 @@ async function uploadImage(payload) {
     throw new Error("Missing image payload.");
   }
 
+  debug("Requesting auth token");
   const token = await getAuthToken();
   const settings = await getSettings();
   const fileName = payload.name || `docs-comment-image-${new Date().toISOString().replace(/[:.]/g, "-")}.png`;
@@ -26,8 +28,9 @@ async function uploadImage(payload) {
     mimeType: payload.mimeType
   };
 
+  debug("Uploading file to Drive", { fileName, mimeType: payload.mimeType });
   const multipartBody = await buildMultipartBody(metadata, payload.dataUrl, payload.mimeType);
-  const uploadResponse = await fetch(DRIVE_UPLOAD_URL, {
+  const uploadResponse = await fetchWithTimeout(DRIVE_UPLOAD_URL, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -41,8 +44,10 @@ async function uploadImage(payload) {
   }
 
   const file = await uploadResponse.json();
+  debug("Drive upload complete", { id: file.id, name: file.name });
 
   if (settings.shareUploadedFiles) {
+    debug("Creating anyone-with-link permission", { id: file.id });
     await makeFileReadableByLink(token, file.id);
   }
 
@@ -76,7 +81,7 @@ async function getSettings() {
 }
 
 async function makeFileReadableByLink(token, fileId) {
-  const response = await fetch(DRIVE_PERMISSION_URL(fileId), {
+  const response = await fetchWithTimeout(DRIVE_PERMISSION_URL(fileId), {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -116,7 +121,31 @@ async function buildMultipartBody(metadata, dataUrl, mimeType) {
 }
 
 function serializeError(error) {
+  console.error("[PasteFrame] Background error", error);
   return {
     message: error?.message || String(error)
   };
+}
+
+async function fetchWithTimeout(url, options) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
+  try {
+    return await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+  } catch (error) {
+    if (error?.name === "AbortError") {
+      throw new Error("Google Drive request timed out.");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function debug(message, details) {
+  console.debug("[PasteFrame]", message, details || "");
 }
