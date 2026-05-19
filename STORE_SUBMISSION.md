@@ -29,7 +29,7 @@ PasteFrame is intentionally small: it runs only on Google Docs document pages, u
 Category:
 
 ```text
-Productivity
+Workflow & Planning
 ```
 
 Support URL:
@@ -99,4 +99,3 @@ PasteFrame handles images that users explicitly paste into Google Docs comment f
 6. Confirm that PasteFrame uploads the image to Google Drive and inserts a Drive link into the comment field.
 7. Open the extension options page to confirm the Drive folder name and link sharing settings.
 ```
-
