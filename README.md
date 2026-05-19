@@ -1,5 +1,7 @@
 # PasteFrame for Google Docs
 
+<img width="1484" height="814" alt="demo3" src="https://github.com/user-attachments/assets/aab49eae-17be-4ad3-9e68-7198a37ddb27" />
+
 Chrome extension MVP for uploading pasted images into Google Docs comment
 threads.
 
