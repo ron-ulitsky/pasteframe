@@ -15,9 +15,8 @@ Users can change the destination folder name from the extension options page.
 
 ## Status
 
-This is an implementation scaffold, not yet store-ready. Before publishing you
-must add a Chrome OAuth client ID in `manifest.json` and verify the OAuth
-consent screen if Google requires it for your account/app.
+PasteFrame is an early v1 extension being prepared for Chrome Web Store
+submission.
 
 ## Local Install
 
@@ -39,11 +38,21 @@ The extension requests only `https://www.googleapis.com/auth/drive.file`, which
 lets it create and manage files it creates or that the user explicitly opens
 with the app.
 
+## Chrome Web Store Prep
+
+See [STORE_SUBMISSION.md](STORE_SUBMISSION.md) for listing copy, privacy field
+answers, and the submission checklist.
+
+The Chrome Web Store privacy policy draft is in [PRIVACY.md](PRIVACY.md).
+
 ## Future Work
 
 Custom inline previews inside comment threads are worth exploring later, but the
 current version intentionally relies on Google Docs' built-in Drive link hover
 preview for stability.
+
+- Insert shorter Drive links.
+- Improve the success toast after uploads.
 
 ## Packaging
 
