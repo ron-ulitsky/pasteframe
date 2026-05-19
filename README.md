@@ -1,5 +1,7 @@
 # PasteFrame for Google Docs
+[![Available in the Chrome Web Store](./icons/chrome-web-store-badge.png)](https://chromewebstore.google.com/detail/edhdhbajbilchfnljnbcdbcnlfcpckpc)
 
+## Demo
 <img width="1484" height="814" alt="demo3" src="https://github.com/user-attachments/assets/aab49eae-17be-4ad3-9e68-7198a37ddb27" />
 
 PasteFrame lets you paste screenshots and images into Google Docs comments
