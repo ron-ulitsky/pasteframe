@@ -1,11 +1,12 @@
 # PasteFrame for Google Docs
 
-Chrome extension MVP for pasting images into Google Docs comment threads.
+Chrome extension MVP for uploading pasted images into Google Docs comment
+threads.
 
 When the user pastes an image while focused in a Google Docs comment editor, the
 extension uploads the image to Google Drive and inserts a shareable Drive link
-into the comment. It also renders inline previews for supported Drive image
-links inside Docs comments for users who have the extension installed.
+into the comment. Google Docs already shows a built-in Drive preview when users
+hover over the link, so the v1 utility is automating the upload-and-link step.
 
 ## Status
 
@@ -32,6 +33,12 @@ consent screen if Google requires it for your account/app.
 The extension requests only `https://www.googleapis.com/auth/drive.file`, which
 lets it create and manage files it creates or that the user explicitly opens
 with the app.
+
+## Future Work
+
+Custom inline previews inside comment threads are worth exploring later, but the
+current version intentionally relies on Google Docs' built-in Drive link hover
+preview for stability.
 
 ## Packaging
 
