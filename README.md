@@ -41,6 +41,4 @@ See [PRIVACY.md](PRIVACY.md) for the full privacy policy.
 
 ## Development
 
-Developer setup, packaging, and Chrome Web Store submission notes live in
-[DEVELOPMENT.md](DEVELOPMENT.md) and [STORE_SUBMISSION.md](STORE_SUBMISSION.md).
-
+Developer setup and packaging notes live in [DEVELOPMENT.md](DEVELOPMENT.md).

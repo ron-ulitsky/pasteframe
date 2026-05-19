@@ -35,9 +35,3 @@ powershell -ExecutionPolicy Bypass -File scripts/package.ps1
 ```
 
 The uploadable ZIP will be written to `dist/pasteframe.zip`.
-
-## Chrome Web Store Submission
-
-See [STORE_SUBMISSION.md](STORE_SUBMISSION.md) for listing copy, privacy field
-answers, and the submission checklist.
-
