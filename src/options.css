@@ -16,13 +16,33 @@ h1 {
   font-weight: 600;
 }
 
-label {
+.field {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.field label {
+  font-weight: 600;
+}
+
+.field input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 34px;
+  padding: 6px 9px;
+  border: 1px solid #dadce0;
+  border-radius: 6px;
+  font: inherit;
+}
+
+.checkbox {
   display: flex;
   gap: 10px;
   align-items: flex-start;
 }
 
-input {
+.checkbox input {
   margin-top: 3px;
 }
 
@@ -31,4 +51,3 @@ input {
   margin: 14px 0 0;
   color: #188038;
 }
-

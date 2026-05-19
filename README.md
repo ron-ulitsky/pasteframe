@@ -8,6 +8,9 @@ extension uploads the image to Google Drive and inserts a shareable Drive link
 into the comment. Google Docs already shows a built-in Drive preview when users
 hover over the link, so the v1 utility is automating the upload-and-link step.
 
+Uploaded images are stored in a `PasteFrame` folder in Google Drive by default.
+Users can change the destination folder name from the extension options page.
+
 ## Status
 
 This is an implementation scaffold, not yet store-ready. Before publishing you

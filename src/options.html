@@ -9,9 +9,13 @@
   <body>
     <main>
       <h1>PasteFrame</h1>
-      <label>
+      <div class="field">
+        <label for="folderName">Drive folder</label>
+        <input id="folderName" type="text" autocomplete="off" placeholder="PasteFrame">
+      </div>
+      <label class="checkbox">
         <input id="shareUploadedFiles" type="checkbox">
-        Make uploaded images readable by anyone with the link
+        <span>Make uploaded images readable by anyone with the link</span>
       </label>
       <p id="status" role="status"></p>
     </main>
