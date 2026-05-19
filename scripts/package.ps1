@@ -15,5 +15,15 @@ foreach ($path in @("manifest.json", "README.md", "src", "icons")) {
   Copy-Item -LiteralPath (Join-Path $root $path) -Destination (Join-Path $staging $path) -Recurse
 }
 
-Compress-Archive -LiteralPath (Join-Path $staging "*") -DestinationPath $zipPath -Force
+if (Test-Path $zipPath) {
+  Remove-Item -LiteralPath $zipPath -Force
+}
+
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+[System.IO.Compression.ZipFile]::CreateFromDirectory($staging, $zipPath)
+
+if (-not (Test-Path $zipPath)) {
+  throw "Package ZIP was not created at $zipPath"
+}
+
 Write-Host "Wrote $zipPath"
