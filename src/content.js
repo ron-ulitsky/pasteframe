@@ -34,11 +34,11 @@ async function handlePaste(event) {
     }
 
     insertTextAtTarget(target, response.result.link);
-    notice.update("Image link inserted.");
+    notice.update(`Uploaded ${response.result.name || "image"}. Link inserted.`, "success");
     debug("Image link inserted", response.result);
   } catch (error) {
     console.error("[PasteFrame] Upload failed", error);
-    notice.update(error.message || "Could not upload image.", true);
+    notice.update(error.message || "Could not upload image.", "error");
   }
 }
 
@@ -87,23 +87,23 @@ function insertTextAtTarget(target, text) {
   active?.focus?.();
   if (!document.execCommand("insertText", false, text)) {
     navigator.clipboard?.writeText(text).catch(() => {});
-    showToast("Image uploaded. Link copied; paste it into the comment.", false, 4500);
+    showToast("Image uploaded. Link copied; paste it into the comment.", "success", 4500);
   }
 }
 
-function showToast(message, isError = false, timeout = 2500) {
+function showToast(message, state = "default", timeout = 2500) {
   const toast = document.createElement("div");
-  toast.className = `dic-toast${isError ? " dic-toast-error" : ""}`;
+  setToastState(toast, state);
   toast.textContent = message;
   document.documentElement.append(toast);
 
   let timer = window.setTimeout(remove, timeout);
 
-  function update(nextMessage, nextIsError = false) {
+  function update(nextMessage, nextState = "default", nextTimeout = timeout) {
     window.clearTimeout(timer);
     toast.textContent = nextMessage;
-    toast.classList.toggle("dic-toast-error", nextIsError);
-    timer = window.setTimeout(remove, nextIsError ? 4500 : timeout);
+    setToastState(toast, nextState);
+    timer = window.setTimeout(remove, nextState === "error" ? 4500 : nextTimeout);
   }
 
   function remove() {
@@ -111,6 +111,16 @@ function showToast(message, isError = false, timeout = 2500) {
   }
 
   return { update, remove };
+}
+
+function setToastState(toast, state) {
+  toast.className = "dic-toast";
+  if (state === "error") {
+    toast.classList.add("dic-toast-error");
+  }
+  if (state === "success") {
+    toast.classList.add("dic-toast-success");
+  }
 }
 
 function fileToDataUrl(file) {

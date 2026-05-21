@@ -37,8 +37,6 @@ See [PRIVACY.md](PRIVACY.md) for the full privacy policy.
 
 ## Roadmap
 
-- Insert shorter Drive links.
-- Improve the success toast after uploads.
 - Explore custom inline previews inside comment threads.
 
 ## Development

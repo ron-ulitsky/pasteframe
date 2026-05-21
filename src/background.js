@@ -56,7 +56,7 @@ async function uploadImage(payload) {
     await makeFileReadableByLink(token, file.id);
   }
 
-  const link = file.webViewLink || `https://drive.google.com/file/d/${file.id}/view`;
+  const link = createDriveFileLink(file.id);
   return {
     id: file.id,
     name: file.name,
@@ -246,4 +246,8 @@ function normalizeFolderName(folderName) {
 
 function escapeDriveQueryString(value) {
   return String(value).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+}
+
+function createDriveFileLink(fileId) {
+  return `https://drive.google.com/file/d/${encodeURIComponent(fileId)}/view`;
 }

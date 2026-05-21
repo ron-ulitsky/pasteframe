@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "PasteFrame for Google Docs",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Paste images into Google Docs comments by uploading them to Drive and inserting previewable links.",
   "icons": {
     "16": "icons/icon16.png",

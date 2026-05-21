@@ -1,6 +1,6 @@
 {
   "name": "pasteframe",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Paste images into Google Docs comments by uploading them to Drive and inserting previewable links.",
   "scripts": {
